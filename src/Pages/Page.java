@@ -1,9 +1,10 @@
 package Pages;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,11 +30,15 @@ public class Page {
 	public static ArrayList<Page> pagesList = new ArrayList<Page>();
 	
 	public Page(String pageURI) {
-		this.pageURI = pageURI;
+		this.pageURI = pageURI.replaceAll("|", "%7C");
+		System.out.println(this.pageURI);
+		
 		this.pagesLinked = new ArrayList<>();
 		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		pagesList.add(this);
 	}
+	
+	
 	
 	public void extractLinks() {
 		try {
@@ -52,9 +57,7 @@ public class Page {
 				
 				while(matcher.find()) { //.find(): return true if the pattern was found
 					Page linkedPage = new Page(link.substring(matcher.start(0), matcher.end(0)));
-					
-					System.out.println(linkedPage);
-					
+					System.out.println(linkedPage);					
 					//if the link is unique
 					if (isLinkedPageUnique(linkedPage)) {
 						//if unique, add it to list
@@ -63,15 +66,13 @@ public class Page {
 				}
 			}
 		}	
-		catch (MalformedURLException ex) {
-			System.out.println("Invalid URL");
-		} 
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
 		} 
-		catch (URISyntaxException uriE) {
-			uriE.printStackTrace();
-		}
+		catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 	
 	//unique in this page's pagesLinked
@@ -113,7 +114,7 @@ public class Page {
 		return new URI(this.pageURI).getHost();
 	}
 
-	public String getPageURL() {
+	public String getPageURI() {
 		return pageURI;
 	}
 

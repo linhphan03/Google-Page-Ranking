@@ -3,6 +3,8 @@ package Hosts;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Host {
 	String host;
@@ -31,10 +33,14 @@ public class Host {
 	}
 	
 	public static void initHostList() throws URISyntaxException {
-		hostList.add(new FreeCodeCamp());
-		hostList.add(new GeeksForGeeks());
-		hostList.add(new HackrIO());
-		hostList.add(new StackOverFlow());
-		hostList.add(new W3Schools());
+		hostList.add(new WallStreetJournal());
+		hostList.add(new NewYorkTimes());
+		hostList.add(new USAToday());
+		hostList.add(new WashingtonPost());
+		hostList.add(new LosAngelesTimes());
+	}
+	
+	public static void rankHost() {
+		Collections.sort(hostList, Comparator.comparingInt(Host::getNumLinks).reversed());
 	}
 }
