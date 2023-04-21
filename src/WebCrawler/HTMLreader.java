@@ -1,5 +1,6 @@
 package WebCrawler;
 
+import java.net.URISyntaxException;
 import java.util.HashSet;
 //import java.io.File;
 //import java.io.IOException;
@@ -9,15 +10,17 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import Hosts.Host;
+import Hosts.HostList;
 import Pages.Page;
 
 public class HTMLreader {
 	// Contain link of each page entered
-	Set<Set<Page>> linkList = new HashSet<>();
+	static Set<Page> inputPages = new HashSet<>();
 	
-	public void takeLink() {
+	public void receiveInput() {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter web pages' URL ('Quit' to finish): ");
+		System.out.println("Enter web pages' URL ('Q' to finish): ");
 		
 		while (sc.hasNextLine()) {
 			String nextLine = sc.nextLine();
@@ -25,7 +28,7 @@ public class HTMLreader {
 			if (!nextLine.toLowerCase().trim().equals("quit")) {
 				Page page = new Page(nextLine);
 				page.extractLinks();
-				linkList.add(page.getPagesLinked());
+				inputPages.add(page);
 			}
 			else {
 				break;
@@ -33,19 +36,19 @@ public class HTMLreader {
 		}
 		sc.close();
 	}
-	
-	public void viewList() {
-		for (Set<Page> pages : linkList) {
-			for (Page p : pages) {
-				System.out.println(p);
-			}
-			System.out.println("--------------------------------------");
-		}
-	}
-	
-	public static void main(String[]args) {
+
+	public static void main(String[]args) throws URISyntaxException {
+		HostList.initHostList();
+		
 		HTMLreader h = new HTMLreader();
-		h.takeLink();
-		h.viewList();
+		h.receiveInput();
+
+		for (Page page : inputPages) {
+			page.extractLinkedPagesHost();
+		}
+		
+		for (Host host : HostList.hostLists) {
+			System.out.println(host.getHost() + " " + host.getNumLinks());
+		}
 	}
 }
