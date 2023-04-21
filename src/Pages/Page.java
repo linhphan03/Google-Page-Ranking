@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,25 +14,25 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import Hosts.Host;
-import Hosts.HostList;
 
 public class Page {
-	int numLink = 0;
 	String pageURI;
 	//to store unique page
-	Set<Page> pagesLinked;
+	ArrayList<Page> pagesLinked;
 	Pattern pattern;
-	int numPage = 0;
 	final String regex = "\\b((?:https?|ftp|file):"
             + "//[-a-zA-Z0-9+&@#/%?="
             + "~_|!:, .;]*[-a-zA-Z0-9+"
             + "&@#/%=~_|])";
 	
+	//contain all the pages, both user input and crawled
+	public static ArrayList<Page> pagesList = new ArrayList<Page>();
 	
 	public Page(String pageURI) {
 		this.pageURI = pageURI;
-		this.pagesLinked = new HashSet<>();
+		this.pagesLinked = new ArrayList<>();
 		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		pagesList.add(this);
 	}
 	
 	public void extractLinks() {
@@ -55,12 +53,13 @@ public class Page {
 				while(matcher.find()) { //.find(): return true if the pattern was found
 					Page linkedPage = new Page(link.substring(matcher.start(0), matcher.end(0)));
 					
+					System.out.println(linkedPage);
+					
 					//if the link is unique
-					if (isPageUnique(linkedPage)) {
-						numLink++;
+					if (isLinkedPageUnique(linkedPage)) {
+						//if unique, add it to list
 						pagesLinked.add(linkedPage);
 					}
-					
 				}
 			}
 		}	
@@ -69,26 +68,33 @@ public class Page {
 		} 
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
-		} catch (URISyntaxException uriE) {
-			// TODO Auto-generated catch block
+		} 
+		catch (URISyntaxException uriE) {
 			uriE.printStackTrace();
 		}
 	}
 	
-	public boolean isPageUnique(Page next) throws URISyntaxException {
-		
-		for (Page p : this.pagesLinked) {
-			if (next.equals(p)) {
-				return false;
+	//unique in this page's pagesLinked
+	public boolean isLinkedPageUnique(Page p) throws URISyntaxException {
+		return samePage(p) == null;
+	}
+	
+	//return the page in stored list of THIS PAGE which is the same to Page p
+	public Page samePage(Page p) throws URISyntaxException {
+		for (Page pageInList : pagesLinked) {
+			if (pageInList.equals(p)) {
+				return pageInList;
 			}
 		}
-		return true;
+		//return null when there is no same page
+		return null;
 	}
-
+	
 	public void extractLinkedPagesHost() throws URISyntaxException {
 		for (Page linkedPage : pagesLinked) {
-			for (Host host : Host.hostLists) {
+			for (Host host : Host.hostList) {
 				if (linkedPage.getHost().equals(host.getHost())) {
+					//add 1 to numLinks of hosts in list if the host of this page is the same of that host
 					host.setNumLinks(host.getNumLinks() + 1);
 				}
 			}
@@ -96,7 +102,7 @@ public class Page {
 	}
 	
 	public boolean equals(Page p) throws URISyntaxException {
-		return this.getPath().equals(p.getPath());
+		return this.getPath().equals(p.getPath()) && this.getHost().equals(p.getHost());
 	}
 	
 	public String getPath() throws URISyntaxException {
@@ -106,21 +112,13 @@ public class Page {
 	public String getHost() throws URISyntaxException {
 		return new URI(this.pageURI).getHost();
 	}
-	
-	public int getNumLink() {
-		return numLink;
-	}
-	
+
 	public String getPageURL() {
 		return pageURI;
 	}
 
-	public Set<Page> getPagesLinked() {
-		return pagesLinked;
-	}
-
-	public int getNumPage() {
-		return numPage;
+	public int getNumLink() {
+		return pagesLinked.size();
 	}
 
 	public Pattern getPattern() {
@@ -133,5 +131,9 @@ public class Page {
 	
 	public String toString() {
 		return pageURI;
+	}
+	
+	public ArrayList<Page> getPagesLinked() {
+		return this.pagesLinked;
 	}
 }

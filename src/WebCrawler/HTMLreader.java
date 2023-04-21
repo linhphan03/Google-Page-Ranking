@@ -1,6 +1,5 @@
 package WebCrawler;
 
-import java.net.URISyntaxException;
 import java.util.HashSet;
 //import java.io.File;
 //import java.io.IOException;
@@ -10,13 +9,11 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-import Hosts.Host;
-import Hosts.HostList;
 import Pages.Page;
 
 public class HTMLreader {
 	// Contain link of each page entered
-	static Set<Page> inputPages = new HashSet<>();
+	public static Set<Page> inputPages = new HashSet<>();
 	
 	public void receiveInput() {
 		Scanner sc = new Scanner(System.in);
@@ -25,7 +22,7 @@ public class HTMLreader {
 		while (sc.hasNextLine()) {
 			String nextLine = sc.nextLine();
 			
-			if (!nextLine.toLowerCase().trim().equals("quit")) {
+			if (!nextLine.toLowerCase().trim().equals("q")) {
 				Page page = new Page(nextLine);
 				page.extractLinks();
 				inputPages.add(page);
@@ -35,20 +32,5 @@ public class HTMLreader {
 			}
 		}
 		sc.close();
-	}
-
-	public static void main(String[]args) throws URISyntaxException {
-		HostList.initHostList();
-		
-		HTMLreader h = new HTMLreader();
-		h.receiveInput();
-
-		for (Page page : inputPages) {
-			page.extractLinkedPagesHost();
-		}
-		
-		for (Host host : HostList.hostLists) {
-			System.out.println(host.getHost() + " " + host.getNumLinks());
-		}
 	}
 }

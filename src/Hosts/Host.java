@@ -5,9 +5,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class Host {
-	public String host;
-	public int numLinks;
-	public static ArrayList<Host> hostLists = new ArrayList<>();
+	String host;
+	int numLinks;
+	public static ArrayList<Host> hostList = new ArrayList<>();
 	
 	public Host(String hostURI) throws URISyntaxException {
 		this.host = new URI(hostURI).getHost();
@@ -31,10 +31,10 @@ public class Host {
 	}
 	
 	public static void initHostList() throws URISyntaxException {
-		hostLists.add(new FreeCodeCamp());
-		hostLists.add(new GeeksForGeeks());
-		hostLists.add(new HackrIO());
-		hostLists.add(new StackOverFlow());
-		hostLists.add(new W3Schools());
+		hostList.add(new FreeCodeCamp());
+		hostList.add(new GeeksForGeeks());
+		hostList.add(new HackrIO());
+		hostList.add(new StackOverFlow());
+		hostList.add(new W3Schools());
 	}
 }
