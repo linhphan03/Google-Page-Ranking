@@ -29,8 +29,8 @@ public class Page {
 	//contain all the pages, both user input and crawled
 	public static ArrayList<Page> pagesList = new ArrayList<Page>();
 	
-	public Page(String pageURI) {
-		this.pageURI = pageURI.replaceAll("|", "%7C");
+	public Page(String pageURI) throws UnsupportedEncodingException {
+		this.pageURI = URLEncoder.encode(pageURI, "UTF_8");
 		System.out.println(this.pageURI);
 		
 		this.pagesLinked = new ArrayList<>();
