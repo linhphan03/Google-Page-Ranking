@@ -26,12 +26,8 @@ public class Main {
 //			System.out.println(host.getHost() + " " + host.getNumLinks());
 //		}
 		
-		for (Page inputPage : HTMLreader.inputPages) {
-			System.out.println("Pages in " + inputPage.toString() + ": ");
-			for (Page page : inputPage.getPagesLinked()) {
-				System.out.println("\t" + page);
-			}
-			System.out.println("--------------------------");
+		for (Page input : HTMLreader.inputPages) {
+			input.extractLinks();
 		}
 	}
 

@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +20,7 @@ import org.jsoup.select.Elements;
 import Hosts.Host;
 
 public class Page {
-	String pageURI;
+	String strURL;
 	//to store unique page
 	//ArrayList<Page> pagesLinked;
 	
@@ -27,6 +28,7 @@ public class Page {
 	ArrayList<Integer> reference;
 	Pattern pattern;
 	int depth;
+	String content;
 	final String regex = "\\b((?:https?|ftp|file):"
             + "//[-a-zA-Z0-9+&@#/%?="
             + "~_|!:, .;]*[-a-zA-Z0-9+"
@@ -35,14 +37,14 @@ public class Page {
 	//contain all the pages, both user input and crawled
 	public static ArrayList<Page> allPages = new ArrayList<Page>();
 	
-	public Page(String pageURI) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
+	public Page(String strURL) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		//this.pageURI = pageURI.replaceAll("#", "%23");
 		//this.pageURI = URLEncoder.encode(pageURI, StandardCharsets.UTF_8.toString());
 		//System.out.println(this.pageURI);
-		this.pageURI = pageURI;
-		URL url = new URL(pageURI);
+		
+		URL url = new URL(strURL);
 		URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-		this.pageURI = uri.toASCIIString();
+		this.strURL = uri.toASCIIString();
 		
 		//this.pagesLinked = new ArrayList<>();
 		this.reference = new ArrayList<>();
@@ -51,9 +53,11 @@ public class Page {
 	}
 	
 	public void extractLinks() {
+		extractContent();
+		
 		try {
 			//jsoup library: extract data from HTML
-			URI uri = new URI(this.pageURI);
+			URI uri = new URI(this.strURL);
 			Document doc = Jsoup.connect(uri.toString()).get();
 			//Reference: https://stackoverflow.com/questions/28660603/how-to-detect-url-to-different-page-also-in-the-same-domain
 			//Elements: extract a list of Element 
@@ -67,6 +71,7 @@ public class Page {
 				
 				while(matcher.find()) { //.find(): return true if the pattern was found
 					Page extracted = new Page(link.substring(matcher.start(0), matcher.end(0)));
+					
 					if (isPageAdded(extracted) == -1) { //not added yet
 						addPageToAllPages(extracted);
 					}
@@ -79,7 +84,10 @@ public class Page {
 //					}
 				}
 			}
-		}	
+		}
+//		System.out.println(countLink + "__________________________________________________");
+//		System.out.println(getNumLink());
+		    	
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
 		} 
@@ -88,22 +96,6 @@ public class Page {
 			e.printStackTrace();
 		} 
 	}
-	
-//	//unique in this page's pagesLinked
-//	public boolean isLinkedPageUnique(Page p) throws URISyntaxException {
-//		return samePage(p) == null;
-//	}
-//	
-//	//return the page in stored list of THIS PAGE which is the same to Page p
-//	public Page samePage(Page p) throws URISyntaxException {
-//		for (Page pageInList : pagesLinked) {
-//			if (pageInList.equals(p)) {
-//				return pageInList;
-//			}
-//		}
-//		//return null when there is no same page
-//		return null;
-//	}
 	
 	//added in big list containing ALL PAGES (allPages)
 	public int isPageAdded(Page extracted) throws URISyntaxException {
@@ -136,21 +128,43 @@ public class Page {
 			}
 		}
 	}
+	
+	public void extractContent() {
+		try {
+			//http:// is required for URL class
+			URL url = new URL(this.strURL);
+			
+			Scanner sc = new Scanner(url.openStream());
+			
+			while (sc.hasNext()) {
+				content += sc.nextLine();
+			}
+		}
+		//Invalid URL, esp invalid / missing protocol
+		catch (MalformedURLException ex) {
+			System.out.println("Invalid URL");
+		}
 		
+		//failed input / output
+		catch (IOException ex) {
+			System.out.println("I/O errors: no such file");
+		}
+	}
+	
 	public boolean equals(Page p) throws URISyntaxException {
-		return this.getPath().equals(p.getPath()) && this.getHost().equals(p.getHost());
+		return this.content.equals(p.content) && this.getHost().equals(p.getHost());
 	}
 	
 	public String getPath() throws URISyntaxException {
-		return new URI(this.pageURI).getPath();
+		return new URI(this.strURL).getPath();
 	}
 	
 	public String getHost() throws URISyntaxException {
-		return new URI(this.pageURI).getHost();
+		return new URI(this.strURL).getHost();
 	}
 
 	public String getPageURI() {
-		return pageURI;
+		return strURL;
 	}
 
 	public int getNumLink() {
@@ -174,7 +188,7 @@ public class Page {
 	}
 	
 	public String toString() {
-		return pageURI;
+		return strURL;
 	}
 	
 //	public ArrayList<Page> getPagesLinked() {

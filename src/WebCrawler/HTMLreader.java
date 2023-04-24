@@ -27,7 +27,6 @@ public class HTMLreader {
 			
 			if (!nextLine.toLowerCase().trim().equals("q")) {
 				Page page = new Page(nextLine);
-				page.extractLinks();
 				inputPages.add(page);
 			}
 			else {
