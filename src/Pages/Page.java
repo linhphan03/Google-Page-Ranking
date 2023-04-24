@@ -45,12 +45,11 @@ public class Page {
 		this.strURI = this.uri.toASCIIString();
 		
 		this.reference = new ArrayList<>();
-		allPages.add(this);
 		content = "";
-		extractContent();
 	}
 	
 	public void extractLinks() {
+		int count = 0;
 		try {
 			//jsoup library: extract data from HTML
 			Document doc = Jsoup.connect(uri.toString()).get();
@@ -68,14 +67,21 @@ public class Page {
 					
 					Page extracted = new Page(link.substring(matcher.start(0), matcher.end(0)));
 				
-					int check = isPageAdded(extracted);
-//					if (check == -1) { //not added yet
-//						addPageToAllPages(extracted);
-//					}
-					System.out.println(check);
-					System.out.println("\n".repeat(2));
+					System.out.println("(" + (++count) + ") " + extracted);
+					int checkCanAdd = isPageAdded(extracted);
+					//eliminate links that can't scrap content
+					//TODO: figure out how to add unique links without contents
+					//		or scrap content of these links (?)
+					
+					//if (checkCanAdd == -1 && !this.getContent().equals("")) { 
+					if (checkCanAdd == -1) {
+						addPageToAllPages(extracted);
+					}
+//					System.out.println(checkCanAdd);
+//					System.out.println("\n");
 				}
 			}
+			System.out.println("\n".repeat(2));
 		}	
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
@@ -86,6 +92,9 @@ public class Page {
 		} 
 	}
 
+	public void addPageToAllPages() {
+		allPages.add(this);
+	}
 	
 	//added in big list containing ALL PAGES (allPages)
 	public int isPageAdded(Page extracted) throws URISyntaxException {
@@ -119,12 +128,17 @@ public class Page {
 		}
 	}
 		
+	//Check if 2 pages are same (navigate to the same)
+	public boolean equals(Page p) throws URISyntaxException {
+		//check equal content, equal host, equal path
+		//return this.getContent().equals(p.getContent()) && this.getHost().equals(p.getHost());
+		return this.getHost().equals(p.getHost()) && this.getPath().equals(p.getPath());
+	}
+	
 	public void extractContent() {
 		try {
-			System.out.println(this.strURI);
 			//http:// is required for URL class
 			URL url = new URL(this.strURI);
-			
 			Scanner sc = new Scanner(url.openStream());
 			
 			while (sc.hasNext()) {
@@ -140,10 +154,6 @@ public class Page {
 		catch (IOException ex) {
 			System.out.println("I/O errors: no such file");
 		}
-	}
-	
-	public boolean equals(Page p) throws URISyntaxException {
-		return this.getContent().equals(p.getContent());
 	}
 	
 	public String getPath() throws URISyntaxException {

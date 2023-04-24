@@ -27,7 +27,13 @@ public class Main {
 //		}
 		
 		for (Page input : HTMLreader.inputPages) {
+			input.addPageToAllPages();
 			input.extractLinks();
+		}
+		
+		int count = 0;
+		for (Page p : Page.allPages) {
+			System.out.println("(" + (++count) + ") " + p);
 		}
 	}
 
