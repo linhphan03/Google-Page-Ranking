@@ -20,44 +20,39 @@ import org.jsoup.select.Elements;
 import Hosts.Host;
 
 public class Page {
-	String strURL;
+	String strURI;
+	URI uri;
 	//to store unique page
 	//ArrayList<Page> pagesLinked;
 	
 	//reference to index page in allPages
 	ArrayList<Integer> reference;
-	Pattern pattern;
 	int depth;
 	String content;
-	final String regex = "\\b((?:https?|ftp|file):"
+	final static String regex = "\\b((?:https?|ftp|file):"
             + "//[-a-zA-Z0-9+&@#/%?="
             + "~_|!:, .;]*[-a-zA-Z0-9+"
             + "&@#/%=~_|])";
+	final static Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+
 	
 	//contain all the pages, both user input and crawled
 	public static ArrayList<Page> allPages = new ArrayList<Page>();
 	
 	public Page(String strURL) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
-		//this.pageURI = pageURI.replaceAll("#", "%23");
-		//this.pageURI = URLEncoder.encode(pageURI, StandardCharsets.UTF_8.toString());
-		//System.out.println(this.pageURI);
-		
 		URL url = new URL(strURL);
-		URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-		this.strURL = uri.toASCIIString();
+		this.uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+		this.strURI = this.uri.toASCIIString();
 		
-		//this.pagesLinked = new ArrayList<>();
 		this.reference = new ArrayList<>();
-		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		allPages.add(this);
+		content = "";
+		extractContent();
 	}
 	
 	public void extractLinks() {
-		extractContent();
-		
 		try {
 			//jsoup library: extract data from HTML
-			URI uri = new URI(this.strURL);
 			Document doc = Jsoup.connect(uri.toString()).get();
 			//Reference: https://stackoverflow.com/questions/28660603/how-to-detect-url-to-different-page-also-in-the-same-domain
 			//Elements: extract a list of Element 
@@ -70,24 +65,18 @@ public class Page {
 				Matcher matcher = pattern.matcher(link);	
 				
 				while(matcher.find()) { //.find(): return true if the pattern was found
+					
 					Page extracted = new Page(link.substring(matcher.start(0), matcher.end(0)));
-					
-					if (isPageAdded(extracted) == -1) { //not added yet
-						addPageToAllPages(extracted);
-					}
-					
-					
-					//if the link extracted is unique
-//					if (isLinkedPageUnique(linkedPage)) {
-//						//if unique, add it to reference list
-//						//pagesLinked.add(linkedPage);
+				
+					int check = isPageAdded(extracted);
+//					if (check == -1) { //not added yet
+//						addPageToAllPages(extracted);
 //					}
+					System.out.println(check);
+					System.out.println("\n".repeat(2));
 				}
 			}
-		}
-//		System.out.println(countLink + "__________________________________________________");
-//		System.out.println(getNumLink());
-		    	
+		}	
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
 		} 
@@ -96,6 +85,7 @@ public class Page {
 			e.printStackTrace();
 		} 
 	}
+
 	
 	//added in big list containing ALL PAGES (allPages)
 	public int isPageAdded(Page extracted) throws URISyntaxException {
@@ -128,11 +118,12 @@ public class Page {
 			}
 		}
 	}
-	
+		
 	public void extractContent() {
 		try {
+			System.out.println(this.strURI);
 			//http:// is required for URL class
-			URL url = new URL(this.strURL);
+			URL url = new URL(this.strURI);
 			
 			Scanner sc = new Scanner(url.openStream());
 			
@@ -152,23 +143,27 @@ public class Page {
 	}
 	
 	public boolean equals(Page p) throws URISyntaxException {
-		return this.content.equals(p.content) && this.getHost().equals(p.getHost());
+		return this.getContent().equals(p.getContent());
 	}
 	
 	public String getPath() throws URISyntaxException {
-		return new URI(this.strURL).getPath();
+		return new URI(this.strURI).getPath();
 	}
 	
 	public String getHost() throws URISyntaxException {
-		return new URI(this.strURL).getHost();
+		return new URI(this.strURI).getHost();
 	}
 
 	public String getPageURI() {
-		return strURL;
+		return strURI;
 	}
 
 	public int getNumLink() {
 		return reference.size();
+	}
+	
+	public String getContent() {
+		return this.content;
 	}
 
 	public Pattern getPattern() {
@@ -188,7 +183,7 @@ public class Page {
 	}
 	
 	public String toString() {
-		return strURL;
+		return strURI;
 	}
 	
 //	public ArrayList<Page> getPagesLinked() {
