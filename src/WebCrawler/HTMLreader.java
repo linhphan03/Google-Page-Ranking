@@ -1,5 +1,8 @@
 package WebCrawler;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 //import java.io.File;
 //import java.io.IOException;
@@ -15,7 +18,7 @@ public class HTMLreader {
 	// Contain link of each page entered
 	public static Set<Page> inputPages = new HashSet<>();
 	
-	public void receiveInput() {
+	public void receiveInput() throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter web pages' URL ('Q' to finish): ");
 		
