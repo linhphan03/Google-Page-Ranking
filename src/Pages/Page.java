@@ -49,7 +49,7 @@ public class Page {
 	}
 	
 	public void extractLinks() {
-		//int count = 0;
+		int count = 0;
 		try {
 			//jsoup library: extract data from HTML
 			Document doc = Jsoup.connect(uri.toString()).get();
@@ -66,19 +66,26 @@ public class Page {
 				while(matcher.find()) { //.find(): return true if the pattern was found
 					
 					Page extracted = new Page(link.substring(matcher.start(0), matcher.end(0)));
-				
-					//System.out.println("(" + (++count) + ") " + extracted);
+									
+					int extractedReference = isPageAdded(extracted);
 					
-					int checkCanAdd = isPageAdded(extracted);
-			
-					if (checkCanAdd == -1) {
+					//if it has not been added to allPages
+					if (extractedReference == -1) {
 						addPageToAllPages(extracted);
+						System.out.println("(" + (++count) + ") " + extracted);
+						System.out.println();
 					}
-					//System.out.println(checkCanAdd);
-					//System.out.println("\n");
+					else {
+						//if has been added, check if this extracted link's reference has already been in this page's reference list
+						//						   if not, add the reference to (pageReference) to 
+						//find the index of extractedReference in this's reference list 
+						if (this.reference.indexOf(extractedReference) == -1) { //has not been added
+							this.reference.add(extractedReference);
+						}
+					}
 				}
 			}
-			//System.out.println("\n".repeat(2));
+			System.out.println("\n");
 		}	
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
@@ -88,10 +95,6 @@ public class Page {
 		} 
 	}
 
-	public void addPageToAllPages() {
-		allPages.add(this);
-	}
-	
 	//added in big list containing ALL PAGES (allPages)
 	public int isPageAdded(Page extracted) throws URISyntaxException {
 		for (int i = 0; i < allPages.size(); i++) {
@@ -109,7 +112,12 @@ public class Page {
 	//  if so, add it to allPages and add its reference (last index in allPages) to 'this.reference'
 	public void addPageToAllPages(Page extracted) throws URISyntaxException {
 		allPages.add(extracted);
-		this.reference.add(getNumLink() - 1);
+		this.reference.add(allPages.size() - 1);
+	}
+	
+	//add this to all pages
+	public void addPageToAllPages() {
+		allPages.add(this);
 	}
 	
 	//from exisiting extracted pages, extract their host
@@ -191,4 +199,8 @@ public class Page {
 	public String toString() {
 		return strURI;
 	}
-}
+	
+	public ArrayList<Integer> getReference(){
+		return this.reference;
+	}
+} 
