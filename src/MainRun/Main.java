@@ -32,9 +32,11 @@ public class Main {
 		}
 		
 		int count = 0;
-		for (Page p : Page.allPages) {
-			System.out.println("(" + (++count) + ") " + p);
-		}
+//		for (Page p : Page.allPages) {
+//			System.out.println("(" + (++count) + ") " + p);
+//		}
+		
+		sysout
 	}
 
 }

@@ -49,7 +49,7 @@ public class Page {
 	}
 	
 	public void extractLinks() {
-		int count = 0;
+		//int count = 0;
 		try {
 			//jsoup library: extract data from HTML
 			Document doc = Jsoup.connect(uri.toString()).get();
@@ -67,28 +67,24 @@ public class Page {
 					
 					Page extracted = new Page(link.substring(matcher.start(0), matcher.end(0)));
 				
-					System.out.println("(" + (++count) + ") " + extracted);
-					int checkCanAdd = isPageAdded(extracted);
-					//eliminate links that can't scrap content
-					//TODO: figure out how to add unique links without contents
-					//		or scrap content of these links (?)
+					//System.out.println("(" + (++count) + ") " + extracted);
 					
-					//if (checkCanAdd == -1 && !this.getContent().equals("")) { 
+					int checkCanAdd = isPageAdded(extracted);
+			
 					if (checkCanAdd == -1) {
 						addPageToAllPages(extracted);
 					}
-//					System.out.println(checkCanAdd);
-//					System.out.println("\n");
+					//System.out.println(checkCanAdd);
+					//System.out.println("\n");
 				}
 			}
-			System.out.println("\n".repeat(2));
+			//System.out.println("\n".repeat(2));
 		}	
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
 		} 
 		catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Wrong URI");
 		} 
 	}
 
@@ -195,8 +191,4 @@ public class Page {
 	public String toString() {
 		return strURI;
 	}
-	
-//	public ArrayList<Page> getPagesLinked() {
-//		return this.pagesLinked;
-//	}
 }
