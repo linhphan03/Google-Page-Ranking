@@ -70,7 +70,7 @@ public class PageRankAlgorithm {
 	
 	public void initInitialVector() {
 		for (int i = 0; i < initialVector.length; i++) {
-			initialVector[i] = 1 / getNumPage();
+			initialVector[i] = (double)1 / getNumPage();
 		}
 	}
 	
@@ -93,22 +93,25 @@ public class PageRankAlgorithm {
 		Matrix tmp = new Matrix(getNumPage(), getNumPage());
 		for (int r = 0; r < getNumPage(); r++) {
 			for (int c = 0; c < getNumPage(); c++) {
-				tmp.set(r, c, 1 / getNumPage());
+				tmp.set(r, c, (double)1 / getNumPage());
 			}
 		}
 		
 		googleMatrix = alteredHyperlinkMatrix.times(ALPHA);
-		googleMatrix.plus(tmp.times(1 - ALPHA));
+		googleMatrix = googleMatrix.plus(tmp.times(1 - ALPHA));
 	}
 	
 	public void calculatePageRank() {
 		//use Google Matrix and initial vector
 		Matrix vector = new Matrix(initialVector, initialVector.length);
-		
+
 		for (int i = 0; i < ITERATIONS; i++) {
 			googleMatrix.times(googleMatrix);
 		}
 		googleMatrix.times(vector);
+		
+		//googleMatrix.print(1, 4);
+		
 		
 		for (int i = 0; i < googleMatrix.getRowDimension(); i++) {
 			pageRankVector[i] = googleMatrix.get(i, 0);
