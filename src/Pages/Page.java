@@ -25,7 +25,7 @@ public class Page {
 	//to store unique page
 	//ArrayList<Page> pagesLinked;
 	
-	//reference to index page in allPages
+	//reference to index page in allPages, the other webpages that this page link to
 	ArrayList<Integer> reference;
 	int depth;
 	String content;
@@ -38,6 +38,7 @@ public class Page {
 	
 	//contain all the pages, both user input and crawled
 	public static ArrayList<Page> allPages = new ArrayList<Page>();
+	public static ArrayList<Boolean> crawled = new ArrayList<>();
 	
 	public Page(String strURL) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		URL url = new URL(strURL);
@@ -49,7 +50,6 @@ public class Page {
 	}
 	
 	public void extractLinks() {
-		int count = 0;
 		try {
 			//jsoup library: extract data from HTML
 			Document doc = Jsoup.connect(uri.toString()).get();
@@ -72,8 +72,8 @@ public class Page {
 					//if it has not been added to allPages
 					if (extractedReference == -1) {
 						addPageToAllPages(extracted);
-						System.out.println("(" + (++count) + ") " + extracted);
-						System.out.println();
+						//set depth of the crawled page
+						extracted.setDepth(this.depth + 1);
 					}
 					else {
 						//if has been added, check if this extracted link's reference has already been in this page's reference list
@@ -85,7 +85,6 @@ public class Page {
 					}
 				}
 			}
-			System.out.println("\n");
 		}	
 		catch (IOException ioe) {
 			System.out.println("I/O errors: No such file!");
@@ -122,7 +121,7 @@ public class Page {
 	
 	//from exisiting extracted pages, extract their host
 	public void extractHost() throws URISyntaxException {
-		for (int i : this.reference) {
+		for (int i : this.reference) {			
 			for (Host host : Host.hostList) {
 				if (allPages.get(i).getHost().equals(host.getHost())) {
 					//add 1 to numLinks of hosts in list if the host of this page is the same of that host
@@ -134,7 +133,7 @@ public class Page {
 		
 	//Check if 2 pages are same (navigate to the same)
 	public boolean equals(Page p) throws URISyntaxException {
-		//check equal content, equal host, equal path
+		//check equal host, equal path
 		//return this.getContent().equals(p.getContent()) && this.getHost().equals(p.getHost());
 		return this.getHost().equals(p.getHost()) && this.getPath().equals(p.getPath());
 	}
@@ -202,5 +201,17 @@ public class Page {
 	
 	public ArrayList<Integer> getReference(){
 		return this.reference;
+	}
+	
+	public void setCrawled() {
+		crawled.add(true);
+	}
+	
+	public boolean getCrawled() {
+		return crawled.get(getIndexInAllPages());
+	}
+	
+	public int getIndexInAllPages() {
+		return allPages.indexOf(this);
 	}
 } 

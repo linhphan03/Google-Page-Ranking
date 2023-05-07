@@ -32,6 +32,10 @@ public class Host {
 		this.numLinks = numLinks;
 	}
 	
+	public String toString() {
+		return this.host;
+	}
+	
 	public static void initHostList() throws URISyntaxException {
 		hostList.add(new WallStreetJournal());
 		hostList.add(new NewYorkTimes());
@@ -42,5 +46,12 @@ public class Host {
 	
 	public static void rankHost() {
 		Collections.sort(hostList, Comparator.comparingInt(Host::getNumLinks).reversed());
+	}
+	
+	public static void printHostRank() {
+		System.out.println("Host rank in descending order");
+		for (Host host : Host.hostList) {
+			System.out.println(host.toString() + ": " + host.getNumLinks());
+		}		
 	}
 }

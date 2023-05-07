@@ -18,8 +18,7 @@ public class HTMLreader {
 	// Contain link of each page entered
 	public static Set<Page> inputPages = new HashSet<>();
 	
-	public void receiveInput() throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
-		Scanner sc = new Scanner(System.in);
+	public void receiveInput(Scanner sc) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		System.out.println("Enter web pages' URL ('Q' to finish): ");
 		
 		while (sc.hasNextLine()) {
@@ -33,6 +32,5 @@ public class HTMLreader {
 				break;
 			}
 		}
-		sc.close();
 	}
 }

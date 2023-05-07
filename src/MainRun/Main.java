@@ -2,34 +2,55 @@ package MainRun;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 import Hosts.Host;
+import PageRank.PageRankAlgorithm;
+import Pages.Page;
 import WebCrawler.HTMLreader;
 
 public class Main {
+	public static final int RANK_HOST = 0;
+	public static final int RANK_PAGE = 1;
 
 	public static void main(String[]args) throws URISyntaxException, UnsupportedEncodingException, MalformedURLException {
-//		Host.initHostList();
-//		
-//		HTMLreader html = new HTMLreader();
-//		html.receiveInput();
-
-//		for (Page page : HTMLreader.inputPages) {
-//			page.extractHost();
-//		}
+		Host.initHostList();
+				
+		//Receive links from user input
+		Scanner sc = new Scanner(System.in);
+		HTMLreader html = new HTMLreader();
+		html.receiveInput(sc);
 		
-//		Host.rankHost();
-//		
+		//extract links from all user input
+		for (Page input : HTMLreader.inputPages) {
+			input.addPageToAllPages();
+			input.extractLinks();
+			//After extracting links, set crawled
+			input.setCrawled();
+		}
+		
+		//extract hosts
+		for (Page page : HTMLreader.inputPages) {
+			page.extractHost();
+		}
+		//rank the popularity of hosts according to input pages and crawled pages
+		Host.rankHost();
+		
+		System.out.print("Choose 0 to rank hosts, 1 to rank pages: ");
+		
+		int choice = sc.nextInt();
+		
+		if (choice == 0) {
+			Host.printHostRank();
+		}
+		else {
+			PageRankAlgorithm pr = new PageRankAlgorithm();
+			pr.printPageRank();
+		}
+
 //		for (Host host : Host.hostList) {
 //			System.out.println(host.getHost() + " " + host.getNumLinks());
-//		}
-		
-//		for (Page input : HTMLreader.inputPages) {
-//			input.addPageToAllPages();
-//			input.extractLinks();
-//			System.out.println("-----------------------------------------");
 //		}
 		
 //		int count = 0;
@@ -40,11 +61,15 @@ public class Main {
 //		for (Page input : HTMLreader.inputPages) {
 //			System.out.println(input.getReference().toString());
 //			System.out.println(input.getNumLink());
-//		}
+//			System.out.println(input.getCrawled());
+//		}	
 		
-		URI x = new URI("https://www.facebook.com/sharer.php?u=https%253A%252F%252Flithub.com%252Faccording-to-the-new-york-times-bestseller-lists-a-lot-of-people-are-buying-books-about-racism%252F&t=According+to+the+New+York+Times+bestseller+lists%252C+a+lot+of+people+are+reading+about+racism");
-		System.out.println(x.getHost());
-		System.out.println(x.getPath());
+//		PageRankAlgorithm pr = new PageRankAlgorithm();
+//		pr.printAdjacencyMatrix();
+//		System.out.println("\n".repeat(4));
+//		pr.printHyperlinkMatrix();
+//		System.out.println("\n".repeat(4));
+//		pr.printAlteredHyperlinkMatrix();;
+//		pr.printGoogleMatrix();
 	}
-
 }

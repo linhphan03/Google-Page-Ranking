@@ -8,4 +8,5 @@
 module PageRank {
 	requires java.desktop;
 	requires org.jsoup;
+	requires Jama;
 }
