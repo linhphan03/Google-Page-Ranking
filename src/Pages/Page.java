@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import Hosts.Host;
+import WebCrawler.HTMLreader;
 
 public class Page {
 	String strURI;
@@ -34,11 +35,11 @@ public class Page {
             + "~_|!:, .;]*[-a-zA-Z0-9+"
             + "&@#/%=~_|])";
 	final static Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-
 	
 	//contain all the pages, both user input and crawled
 	public static ArrayList<Page> allPages = new ArrayList<Page>();
 	public static ArrayList<Boolean> crawled = new ArrayList<>();
+	public static int crawlLevel = 1;
 	
 	public Page(String strURL) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		URL url = new URL(strURL);
@@ -201,10 +202,6 @@ public class Page {
 	
 	public ArrayList<Integer> getReference(){
 		return this.reference;
-	}
-	
-	public void setCrawled() {
-		crawled.add(true);
 	}
 	
 	public boolean getCrawled() {

@@ -19,18 +19,27 @@ public class HTMLreader {
 	public static Set<Page> inputPages = new HashSet<>();
 	
 	public void receiveInput(Scanner sc) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
-		System.out.println("Enter web pages' URL ('Q' to finish): ");
+		System.out.println("Enter web pages' URL, enter extract level to exit ");
 		
 		while (sc.hasNextLine()) {
 			String nextLine = sc.nextLine();
 			
-			if (!nextLine.toLowerCase().trim().equals("q")) {
+			if (!nextLine.chars().allMatch( Character::isDigit )) {
 				Page page = new Page(nextLine);
 				inputPages.add(page);
 			}
 			else {
+				Page.crawlLevel = Integer.valueOf(nextLine);
 				break;
 			}
+		}
+		
+		addToAllPages();
+	}
+	
+	public void addToAllPages() {
+		for (Page input : HTMLreader.inputPages) {
+			input.addPageToAllPages();
 		}
 	}
 }

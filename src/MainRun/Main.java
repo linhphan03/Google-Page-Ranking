@@ -22,14 +22,19 @@ public class Main {
 		HTMLreader html = new HTMLreader();
 		html.receiveInput(sc);
 		
-		//extract links from all user input
-		for (Page input : HTMLreader.inputPages) {
-			input.addPageToAllPages();
-			input.extractLinks();
-			//After extracting links, set crawled
-			input.setCrawled();
-		}
+		int crawlPages = Page.allPages.size();
+		int p = 0;
 		
+		for (int l = 0; l < Page.crawlLevel; l++) {
+			for (; p < crawlPages; p++) {
+				Page page = Page.allPages.get(p);
+//				int pageIndex = page.getIndexInAllPages();
+				page.extractLinks();
+//				Page.crawled.add(pageIndex, true);
+			}
+			//after each level, update number of pages crawled
+			crawlPages = Page.allPages.size();
+		}
 		//extract hosts
 		for (Page page : HTMLreader.inputPages) {
 			page.extractHost();
