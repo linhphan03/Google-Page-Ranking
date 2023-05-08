@@ -1,14 +1,14 @@
-package MainRun;
+package Test;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 
-import Hosts.Host;
+import PageHost.Host;
 import PageRank.PageRankAlgorithm;
-import Pages.Page;
 import WebCrawler.HTMLreader;
+import WebPage.Page;
 
 public class Main {
 	public static final int RANK_HOST = 0;
@@ -25,12 +25,10 @@ public class Main {
 		int crawlPages = Page.allPages.size();
 		int p = 0;
 		
-		for (int l = 0; l < Page.crawlLevel; l++) {
+		for (int l = 0; l < HTMLreader.crawlLevel; l++) {
 			for (; p < crawlPages; p++) {
 				Page page = Page.allPages.get(p);
-//				int pageIndex = page.getIndexInAllPages();
 				page.extractLinks();
-//				Page.crawled.add(pageIndex, true);
 			}
 			//after each level, update number of pages crawled
 			crawlPages = Page.allPages.size();

@@ -1,4 +1,4 @@
-package Hosts;
+package PageHost;
 
 import java.net.URISyntaxException;
 

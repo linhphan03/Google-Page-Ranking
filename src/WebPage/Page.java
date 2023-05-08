@@ -1,4 +1,4 @@
-package Pages;
+package WebPage;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -17,7 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import Hosts.Host;
+import PageHost.Host;
 import WebCrawler.HTMLreader;
 
 public class Page {
@@ -38,8 +38,6 @@ public class Page {
 	
 	//contain all the pages, both user input and crawled
 	public static ArrayList<Page> allPages = new ArrayList<Page>();
-	public static ArrayList<Boolean> crawled = new ArrayList<>();
-	public static int crawlLevel = 1;
 	
 	public Page(String strURL) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		URL url = new URL(strURL);
@@ -202,10 +200,6 @@ public class Page {
 	
 	public ArrayList<Integer> getReference(){
 		return this.reference;
-	}
-	
-	public boolean getCrawled() {
-		return crawled.get(getIndexInAllPages());
 	}
 	
 	public int getIndexInAllPages() {

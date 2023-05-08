@@ -4,9 +4,9 @@ package PageRank;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import WebPage.Page;
+import WebPage.SamplePage;
 
-public class PageRankAlgorithm {
+public class PageRankAlgorithm_Sample {
 	 //return PageRank 
 	static final double ALPHA = 0.85;
 	static final int ITERATIONS = 100;
@@ -14,14 +14,14 @@ public class PageRankAlgorithm {
 	//contain importance score of pages
 	double[] pageRankVector; 
 	double[] initialVector;
-	ArrayList<Page> graph = Page.allPages;
+	ArrayList<SamplePage> graph = SamplePage.allPages;
 	Matrix adjacencyMatrix;
 	Matrix hyperlinkMatrix;
 	//altered hyperlink matrix with dangling nodes fixed
 	Matrix alteredHyperlinkMatrix;
 	Matrix googleMatrix;
 	
-	public PageRankAlgorithm() {
+	public PageRankAlgorithm_Sample() {
 		//if Page ith links to Page j, adjacencyMatrix[i - 1][j - 1] = 1. Otherwise = 0
 		//column: the pages analyzed.
 		//row: the pages link to it

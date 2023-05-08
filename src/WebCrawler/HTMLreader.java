@@ -12,11 +12,12 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-import Pages.Page;
+import WebPage.Page;
 
 public class HTMLreader {
 	// Contain link of each page entered
 	public static Set<Page> inputPages = new HashSet<>();
+	public static int crawlLevel = 1;
 	
 	public void receiveInput(Scanner sc) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
 		System.out.println("Enter web pages' URL, enter extract level to exit ");
@@ -29,7 +30,7 @@ public class HTMLreader {
 				inputPages.add(page);
 			}
 			else {
-				Page.crawlLevel = Integer.valueOf(nextLine);
+				crawlLevel = Integer.valueOf(nextLine);
 				break;
 			}
 		}
